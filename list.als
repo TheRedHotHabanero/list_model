@@ -14,13 +14,15 @@ var sig Node { var nxt: set Node }
 
 var sig Root in Node {}
 
+// fix the root by subtracting a set reachable nodes from the set of all nodes
 fact
 {
   always
   {
-    Root = Node - Node.^nxt // все узлы, которые достижимы из каких-то узлов
+    Root = Node - Node.^nxt // all nodes that are reachable from some nodes
   }
 }
+
 fun nodes(list: Node) : Node
 {
   list.*(nxt + ~nxt)
@@ -31,11 +33,13 @@ fun root(list: Node) : Node
   Root & list.nodes
 }
 
+// last elem with no next roots
 fun last(list: Node) : Node
 {
   { n: list.nodes | no n.nxt }
 }
 
+// validation requirements
 pred valid(lst: Node)
 {
   all n: lst.nodes
@@ -47,11 +51,13 @@ pred valid(lst: Node)
   one lst.root
 }
 
+// all is valid when every single part is valid
 pred all_valid()
 {
   all n:Node | n.valid
 }
 
+// making one list from two, validating requirements
 pred join(r1, r2: Root)
 {
   no r1.nodes & r2.nodes
